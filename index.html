@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CitrusSoilMap</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.29/"></script>
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      z-index: 99;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .top-bar h1 {
+      font-size: 1.2rem;
+      color: #2e7d32;
+      margin: 0;
+    }
+
+    .btn {
+      background: #2e7d32;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .upload-box {
+      position: absolute;
+      top: 60px;
+      left: 10px;
+      z-index: 10;
+      background: #ffffffdd;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .upload-box input {
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <h1>Soil Health in Citrus Monitor</h1>
+    <button class="btn">Contact Us</button>
+  </div>
+
+  <div class="upload-box">
+    <label for="csvInput"><strong>Upload CSV (Soil/Microbial):</strong></label><br />
+    <input type="file" id="csvInput" accept=".csv" />
+  </div>
+
+  <div id="viewDiv"></div>
+
+  <script>
+    require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer"], function(Map, MapView, FeatureLayer) {
+      const map = new Map({
+        basemap: "topo-vector"
+      });
+
+      const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-81.5, 28], // Florida citrus belt
+        zoom: 8
+      });
+
+      // Sample Feature Layer - Replace with your real ArcGIS Online URL
+      const soilLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/your_org_id/arcgis/rest/services/your_layer/FeatureServer/0",
+        title: "Soil Health Observations"
+      });
+
+      map.add(soilLayer);
+    });
+  </script>
+</body>
+</html>
