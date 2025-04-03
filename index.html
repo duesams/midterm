@@ -46,6 +46,32 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       z-index: 10;
     }
+
+    @media (max-width: 600px) {
+      .top-bar {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .upload-box {
+        top: 100px;
+        left: 10px;
+        width: calc(100% - 20px);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .top-bar {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .upload-box {
+        top: 100px;
+        left: 10px;
+        width: calc(100% - 20px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -96,24 +122,58 @@
               type: "fields",
               fieldInfos: [
                 { fieldName: "musym", label: "Soil Symbol" },
-                { fieldName: "drclassdcd", label: "Drainage Class" },
-                { fieldName: "hydgrpdcd", label: "Hydrologic Group" },
-                { fieldName: "slopegraddcp", label: "Slope Gradient (Dominant Component)" },
-                { fieldName: "aws0100wta", label: "Available Water Storage (0-100 cm)" },
-                { fieldName: "taxorder", label: "Taxonomic Order" },
-                { fieldName: "taxsuborder", label: "Taxonomic Suborder" },
-                { fieldName: "taxgrtgroup", label: "Great Group" },
-                { fieldName: "taxsubgrp", label: "Subgroup" },
-                { fieldName: "corcon", label: "Corrosion of Concrete" },
-                { fieldName: "corsteel", label: "Corrosion of Steel" },
-                { fieldName: "hydricrating", label: "Hydric Rating" },
-                { fieldName: "muname", label: "Soil Name" }
-                
+                { fieldName: "drclassdcd", label: "Drainage Class" }
               ]
             }
-          ]
-        }
-      });
+          ],
+            }
+          });
+    
+          ssurgoLayer.when(() => {
+            console.log("SSURGO Layer loaded successfully.");
+          }).catch((error) => {
+            console.error("Error loading SSURGO Layer:", error);
+            alert("Failed to load the soil data layer. Please check your internet connection or try again later.");
+          });
+
+          document.getElementById("csvInput").addEventListener("change", function(event) {
+              const file = event.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                  const csvData = e.target.result;
+                  console.log("CSV Data:", csvData);
+                  // Parse and process the CSV data here
+                };
+                reader.readAsText(file);
+              } else {
+                alert("No file selected. Please upload a valid CSV file.");
+              }
+            });
+
+      const popupTemplate = {
+        title: "{musym} - {muname}",
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              { fieldName: "musym", label: "Soil Symbol" },
+              { fieldName: "drclassdcd", label: "Drainage Class" },
+              { fieldName: "hydgrpdcd", label: "Hydrologic Group" },
+              { fieldName: "slopegraddcp", label: "Slope Gradient (Dominant Component)" },
+              { fieldName: "aws0100wta", label: "Available Water Storage (0-100 cm)" },
+              { fieldName: "taxorder", label: "Taxonomic Order" },
+              { fieldName: "taxsuborder", label: "Taxonomic Suborder" },
+              { fieldName: "taxgrtgroup", label: "Great Group" },
+              { fieldName: "taxsubgrp", label: "Subgroup" },
+              { fieldName: "corcon", label: "Corrosion of Concrete" },
+              { fieldName: "corsteel", label: "Corrosion of Steel" },
+              { fieldName: "hydricrating", label: "Hydric Rating" },
+              { fieldName: "muname", label: "Soil Name" }
+            ]
+          }
+        ]
+      };
 
       map.add(ssurgoLayer);
     
