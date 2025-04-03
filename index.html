@@ -2,29 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CitrusSoilMap</title>
+
+
   <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
   <script src="https://js.arcgis.com/4.29/"></script>
   <style>
     html, body, #viewDiv {
-      padding: 0;
       margin: 0;
+      padding: 0;
       height: 100%;
       width: 100%;
-      font-family: 'Segoe UI', sans-serif;
     }
 
     .top-bar {
       position: absolute;
       top: 0;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.95);
+      left: 0;
+      width: 50%;
+      background: #f0f8f4;
       z-index: 99;
+      padding: 10px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 20px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
@@ -34,46 +36,43 @@
       margin: 0;
     }
 
-    .btn {
-      background: #2e7d32;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
     .upload-box {
       position: absolute;
       top: 60px;
-      left: 10px;
-      z-index: 10;
+      left: 15px;
       background: #ffffffdd;
       padding: 10px;
       border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-
-    .upload-box input {
-      margin-top: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      z-index: 10;
     }
   </style>
 </head>
 <body>
   <div class="top-bar">
     <h1>Soil Health in Citrus Monitor</h1>
-    <button class="btn">Contact Us</button>
+    <button onclick="alert('Contact us at duesambani@gmail.com')">Contact Us</button>
   </div>
 
   <div class="upload-box">
-    <label for="csvInput"><strong>Upload CSV (Soil/Microbial):</strong></label><br />
+    <label for="csvInput"><strong>Upload CSV (Soil Data):</strong></label><br />
     <input type="file" id="csvInput" accept=".csv" />
   </div>
 
   <div id="viewDiv"></div>
 
   <script>
-    require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer"], function(Map, MapView, FeatureLayer) {
+    require([
+      "esri/config", 
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/widgets/Legend",
+      "esri/widgets/LayerList"
+    ], function( esriConfig, Map, MapView, FeatureLayer, Legend, LayerList) {
+
+    esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurKQVP8PWOfxuzYjdMuIGk7u1YyVthU1o8lLnxj2ur8dpMAL8Ub55z1RthTyo1-hIZGKRh5lFlMauHG5LDn2OaPJiBoJQ-8rBWW8nBPgjYAXvXdfhRmL5J4z0eXtsV9h3o9czM07mdtIeJBXPCZ5p0jmBC5rCp4hRr2JK5YDaaxguEukDHTdig7Nr485_uIj97SL6EXuPhwk4BsLQH5nwe0A.AT1_zi3VeksP";
+
       const map = new Map({
         basemap: "topo-vector"
       });
@@ -81,18 +80,49 @@
       const view = new MapView({
         container: "viewDiv",
         map: map,
-        center: [-81.5, 28], // Florida citrus belt
+        center: [-82.0, 28.1], // Central Florida citrus region
         zoom: 8
       });
 
-      // Sample Feature Layer - Replace with your real ArcGIS Online URL
-      const soilLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/your_org_id/arcgis/rest/services/your_layer/FeatureServer/0",
-        title: "Soil Health Observations"
+      // SSURGO Soils Layer from Living Atlas
+      const ssurgoLayer = new FeatureLayer({
+        url: "https://landscape11.arcgis.com/arcgis/rest/services/USA_Soils_Map_Units/featureserver",
+        title: "SSURGO Soil Properties",
+        outFields: ["*"],
+        popupTemplate: {
+          title: "{musym} - {muname}",
+          content: [
+            {
+              type: "fields",
+              fieldInfos: [
+                { fieldName: "musym", label: "Soil Symbol" },
+                { fieldName: "drclassdcd", label: "Drainage Class" },
+                { fieldName: "hydgrpdcd", label: "Hydrologic Group" },
+                { fieldName: "slopegraddcp", label: "Slope Gradient (Dominant Component)" },
+                { fieldName: "aws0100wta", label: "Available Water Storage (0-100 cm)" },
+                { fieldName: "taxorder", label: "Taxonomic Order" },
+                { fieldName: "taxsuborder", label: "Taxonomic Suborder" },
+                { fieldName: "taxgrtgroup", label: "Great Group" },
+                { fieldName: "taxsubgrp", label: "Subgroup" },
+                { fieldName: "corcon", label: "Corrosion of Concrete" },
+                { fieldName: "corsteel", label: "Corrosion of Steel" },
+                { fieldName: "hydricrating", label: "Hydric Rating" },
+                { fieldName: "muname", label: "Soil Name" }
+                
+              ]
+            }
+          ]
+        }
       });
 
-      map.add(soilLayer);
+      map.add(ssurgoLayer);
+    
+      view.ui.add(new Legend({ view: view }), "bottom-left");
+      view.ui.add(new LayerList({ view: view }), "top-right"); 
+       
+      
     });
   </script>
 </body>
 </html>
+
